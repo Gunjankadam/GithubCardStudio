@@ -628,33 +628,35 @@ function renderStarsCardSvg({ user, repoSummary, theme, id, accent }) {
 
 function renderTopReposCardSvg({ user, repoSummary, theme, id, accent }) {
   const v = themeVars(theme, accent);
-  const width = 560;
-  const pad = 32;
-  const rowH = 36;
+  const width = 580;
+  const pad = 40;
+  const contentX = pad + 6;
+  const rowH = 48;
   const list = repoSummary?.topRepos ?? [];
-  const headerY = 108;
-  const height = Math.max(220, headerY + Math.max(1, list.length) * rowH + 40);
+  const listTop = 112;
+  /** Absolute SVG x; both stat columns use text-anchor="end" so edges line up. */
+  const forksColRight = width - pad;
+  const starsColRight = forksColRight - 86;
+  const nameMaxChars = 28;
+  const descMaxChars = 48;
+  const height = Math.max(248, listTop + Math.max(1, list.length) * rowH + 40);
   const staleNote = repoSummary?.stale ? ' · Cached' : '';
 
   const rows = list.map((it, i) => {
-    const y = headerY + i * rowH;
-    const desc = it.description
-      ? it.description.length > 42
-        ? `${it.description.slice(0, 41)}…`
-        : it.description
-      : '';
+    const rowTop = listTop + i * rowH;
+    const titleBase = rowTop + 18;
+    const desc = it.description ? truncPlain(it.description, descMaxChars) : '';
+    const name = truncPlain(it.name, nameMaxChars);
+    const starLabel = countUnit(it.stars, 'star', 'stars');
+    const forkLabel = countUnit(it.forks, 'fork', 'forks');
     return `
-    <g transform="translate(${pad} ${y})">
-      <text x="0" y="14" fill="url(#accent_${id})" font-family="${fontStack()}" font-size="14" font-weight="900">${esc(it.name)}</text>
-      <text x="280" y="14" fill="${v.muted}" font-family="${fontStack()}" font-size="12" font-weight="700">${esc(
-      String(it.stars)
-    )} stars</text>
-      <text x="${width - pad - 4}" y="14" text-anchor="end" fill="${v.muted}" font-family="${fontStack()}" font-size="12" font-weight="700">${esc(
-      String(it.forks)
-    )} forks</text>
+    <g>
+      <text x="${contentX}" y="${titleBase}" fill="url(#accent_${id})" font-family="${fontStack()}" font-size="14" font-weight="900">${esc(name)}</text>
+      <text x="${starsColRight}" y="${titleBase}" text-anchor="end" fill="${v.muted}" font-family="${fontStack()}" font-size="12" font-weight="700">${esc(starLabel)}</text>
+      <text x="${forksColRight}" y="${titleBase}" text-anchor="end" fill="${v.muted}" font-family="${fontStack()}" font-size="12" font-weight="700">${esc(forkLabel)}</text>
       ${
         desc
-          ? `<text x="0" y="30" fill="${v.muted}" font-family="${fontStack()}" font-size="11" font-weight="600">${esc(desc)}</text>`
+          ? `<text x="${contentX}" y="${titleBase + 20}" fill="${v.muted}" font-family="${fontStack()}" font-size="11" font-weight="600">${esc(desc)}</text>`
           : ''
       }
     </g>`;
@@ -662,7 +664,7 @@ function renderTopReposCardSvg({ user, repoSummary, theme, id, accent }) {
 
   const empty =
     list.length === 0
-      ? `<text x="${width / 2}" y="${headerY + 20}" text-anchor="middle" fill="${v.muted}" font-family="${fontStack()}" font-size="13" font-weight="700">No public repos in scan range.</text>`
+      ? `<text x="${width / 2}" y="${listTop + 28}" text-anchor="middle" fill="${v.muted}" font-family="${fontStack()}" font-size="13" font-weight="700">No public repos in scan range.</text>`
       : '';
 
   return `<?xml version="1.0" encoding="UTF-8"?>
@@ -671,12 +673,12 @@ function renderTopReposCardSvg({ user, repoSummary, theme, id, accent }) {
   )}">
   ${baseDefs(v, id)}
   ${frame({ width, height, v, id })}
-  <rect x="${pad}" y="20" width="4" height="46" rx="2" fill="url(#accent_${id})" opacity="0.95"/>
-  <text x="${pad + 14}" y="38" fill="${v.muted}" font-family="${fontStack()}" font-size="10" font-weight="900" letter-spacing="0.2em">TOP REPOS</text>
-  <text x="${pad + 14}" y="72" fill="url(#accent_${id})" font-family="${fontStack()}" font-size="19" font-weight="900">Most starred</text>
+  <rect x="${pad}" y="26" width="4" height="50" rx="2" fill="url(#accent_${id})" opacity="0.95"/>
+  <text x="${pad + 14}" y="46" fill="${v.muted}" font-family="${fontStack()}" font-size="10" font-weight="900" letter-spacing="0.2em">TOP REPOS</text>
+  <text x="${pad + 14}" y="82" fill="url(#accent_${id})" font-family="${fontStack()}" font-size="19" font-weight="900">Most starred</text>
   ${rows.join('')}
   ${empty}
-  <text x="${width / 2}" y="${height - 14}" text-anchor="middle" fill="${v.muted}" font-family="${fontStack()}" font-size="10" font-weight="700">${esc(
+  <text x="${width / 2}" y="${height - 20}" text-anchor="middle" fill="${v.muted}" font-family="${fontStack()}" font-size="10" font-weight="700">${esc(
     `Non-fork repos · ${repoSummary?.reposListed ?? 0} scanned${staleNote}`
   )}</text>
 </svg>`;

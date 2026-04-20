@@ -188,13 +188,19 @@ export function cardThemeIsLight(theme) {
 export function themeVars(theme, accentHex) {
   const k = normalizeThemeKey(theme);
   const v = { ...THEME_PRESETS[k] };
-  const ac = accentHex && /^#[0-9a-fA-F]{6}$/i.test(String(accentHex)) ? String(accentHex) : null;
+  let h = accentHex ? String(accentHex).trim().replace(/^#/, '') : '';
+  if (/^[0-9a-fA-F]{3}$/i.test(h)) {
+    h = h
+      .toLowerCase()
+      .split('')
+      .map((c) => c + c)
+      .join('');
+  }
+  const ac = h && /^[0-9a-fA-F]{6}$/i.test(h) ? `#${h.toLowerCase()}` : null;
   if (ac) {
-    const base = ac.startsWith('#') ? ac : `#${ac}`;
-    const norm = `#${base.replace(/^#/, '').toLowerCase()}`;
-    v.accent0 = norm;
-    v.accent1 = mixWhiteHex(norm, 0.38);
-    const rgb = hexToRgb(norm);
+    v.accent0 = ac;
+    v.accent1 = mixWhiteHex(ac, 0.38);
+    const rgb = hexToRgb(ac);
     if (rgb) v.glow = `rgba(${rgb.r},${rgb.g},${rgb.b},0.48)`;
   }
   return v;

@@ -70,7 +70,7 @@
   }
 
   function syncPickerFromHex() {
-    let h = (els.accentHex.value || '').trim().replace(/^#/, '');
+    let h = (els.accentHex.value || '').trim().replace(/^#/, '').replace(/\s+/g, '');
     if (!h) return;
     if (/^[0-9a-fA-F]{6}$/.test(h)) els.accent.value = `#${h.toLowerCase()}`;
     else if (/^[0-9a-fA-F]{3}$/.test(h)) {
@@ -91,12 +91,12 @@
     params.set('user', user);
     params.set('theme', els.theme.value);
 
-    const hexRaw = (els.accentHex.value || '').trim().replace(/^#/, '');
+    const hexRaw = (els.accentHex.value || '').trim().replace(/^#/, '').replace(/\s+/g, '');
     const def = THEME_DEFAULT_ACCENTS[els.theme.value];
     const picker = (els.accent.value || '').replace(/^#/, '').toLowerCase();
     const defNorm = (def || '').replace(/^#/, '').toLowerCase();
     const userTyped = /^[0-9a-fA-F]{3}$/.test(hexRaw) || /^[0-9a-fA-F]{6}$/.test(hexRaw);
-    const pickerDiffers = picker && defNorm && picker !== defNorm;
+    const pickerDiffers = Boolean(picker && defNorm && picker !== defNorm);
     if (userTyped) params.set('accent', hexRaw);
     else if (pickerDiffers) params.set('accent', picker);
 
@@ -124,11 +124,9 @@
   }
 
   function update() {
-    const hexField = (els.accentHex.value || '').trim();
-    if (!hexField) {
-      const def = THEME_DEFAULT_ACCENTS[els.theme.value];
-      if (def) els.accent.value = def;
-    } else {
+    // Never reset the color picker here when hex is empty — that ran on every
+    // update() (username, layout, etc.) and wiped picker overrides before buildCardUrl().
+    if ((els.accentHex.value || '').trim()) {
       syncPickerFromHex();
     }
 
@@ -149,7 +147,9 @@
     const alt = `GitHub ${previewAltLabel()} — ${user}`;
     els.preview.replaceChildren();
     const img = document.createElement('img');
-    img.src = url;
+    // Bust cache for studio preview only (API sends max-age=1800; same-card URL would otherwise stick).
+    const bust = `_pv=${Date.now()}`;
+    img.src = url.includes('?') ? `${url}&${bust}` : `${url}?${bust}`;
     img.alt = alt;
     img.addEventListener('error', () => {
       const p = document.createElement('p');
@@ -178,14 +178,24 @@
     update();
   });
 
-  els.accent.addEventListener('input', () => {
+  function onAccentPickerChange() {
     els.accentHex.value = '';
     update();
-  });
-  els.accentHex.addEventListener('input', () => {
-    syncPickerFromHex();
+  }
+  els.accent.addEventListener('input', onAccentPickerChange);
+  els.accent.addEventListener('change', onAccentPickerChange);
+  function onAccentHexChange() {
+    const raw = (els.accentHex.value || '').trim();
+    if (!raw) {
+      const def = THEME_DEFAULT_ACCENTS[els.theme.value];
+      if (def) els.accent.value = def;
+    } else {
+      syncPickerFromHex();
+    }
     update();
-  });
+  }
+  els.accentHex.addEventListener('input', onAccentHexChange);
+  els.accentHex.addEventListener('change', onAccentHexChange);
   els.theme.addEventListener('change', () => {
     applyThemeAccentDefaults();
     update();
