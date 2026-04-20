@@ -1,4 +1,4 @@
-# GitHub Card Studio (SVG)
+# GitHub Card Studio 
 
 A small **Node.js + Express** app that renders **GitHub stats cards as SVG**: streak layouts, language mix, profile snapshot, aggregate stars/forks, and top repositories by stars. Use the bundled **web UI** to tune options and copy README-ready **Markdown**, **HTML**, or a raw **URL**.
 
@@ -42,11 +42,6 @@ Then open **`http://localhost:3000/`** for the studio. Other useful paths:
 | `GET /api-help` | Plain-text API cheat sheet |
 | `GET /healthz` | `{ "ok": true }` |
 
-If port **3000** is busy, the server tries **3001…3024** (see console). Override:
-
-```powershell
-$env:PORT = 3001; npm run start
-```
 
 **PowerShell smoke test** (from project root):
 
@@ -159,6 +154,14 @@ Useful when aligning README layouts:
 - **`profile`** — width **580px**, height grows with bio lines
 - **`stars`** — about **520×220**
 - **`top-repos`** — similar width to stars; height grows with rows
+
+## Screenshots<p align="center">
+
+![Home](https://github.com/Gunjankadam/GithubCardStudio/blob/main/1.png)
+
+![Home](https://github.com/Gunjankadam/GithubCardStudio/blob/main/2.png)
+
+![Home](https://github.com/Gunjankadam/GithubCardStudio/blob/main/3.png)
 
 ## License
 
