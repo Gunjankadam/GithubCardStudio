@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>GitHub Card Studio</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div class="wrap">
+      <header>
+        <h1>GitHub Card Studio</h1>
+        <p>Pick a <strong>card</strong> (streak, languages, profile, stars, top repos), then streak-only <strong>arrangement</strong> and <strong>layout</strong>, plus <strong>palette</strong>, optional accent, and <strong>scale</strong> — then copy a README-ready link.</p>
+      </header>
+
+      <div class="layout">
+        <div class="panel">
+          <h2>Options</h2>
+
+          <div class="field">
+            <label for="user">GitHub username</label>
+            <input type="text" id="user" autocomplete="username" placeholder="octocat" spellcheck="false" />
+          </div>
+
+          <div class="field">
+            <span class="field-label">Card</span>
+            <div class="mode-toggle" role="group" aria-label="Card type">
+              <button type="button" class="mode-btn is-active" data-card-mode="streak" id="modeStreak" aria-pressed="true">Streak</button>
+              <button type="button" class="mode-btn" data-card-mode="languages" id="modeLanguages" aria-pressed="false">Languages</button>
+              <button type="button" class="mode-btn" data-card-mode="profile" id="modeProfile" aria-pressed="false">Profile</button>
+              <button type="button" class="mode-btn" data-card-mode="stars" id="modeStars" aria-pressed="false">Stars</button>
+              <button type="button" class="mode-btn" data-card-mode="top-repos" id="modeTopRepos" aria-pressed="false">Top repos</button>
+            </div>
+          </div>
+
+          <div id="streakOnlyBlock">
+            <div class="field">
+              <label for="arrangement">Arrangement</label>
+              <select id="arrangement">
+                <option value="basic">Basic</option>
+                <option value="compact">Compact</option>
+                <option value="banner">Banner</option>
+              </select>
+              <p class="hint">Basic is the default wide hero card; compact fits three stat tiles; banner is extra wide.</p>
+            </div>
+
+            <div class="field">
+              <label for="layout">Layout</label>
+              <select id="layout">
+                <option value="01">Curved split</option>
+                <option value="02">Curved split mirrored</option>
+                <option value="03">Diagonal wedge</option>
+                <option value="04">Top accent band</option>
+                <option value="05">Bottom accent strip</option>
+                <option value="06">Vertical column split</option>
+                <option value="07">Right-edge ribbon</option>
+                <option value="08">Full-card soft wash</option>
+                <option value="09">Diagonal ribbon</option>
+                <option value="10">Left accent rail</option>
+                <option value="11">Bottom-left blob</option>
+                <option value="13">Spotlight and guide</option>
+                <option value="14">Double frame inset</option>
+                <option value="15">Step-cut column</option>
+              </select>
+              <p class="hint">Partition style for streak cards only.</p>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="theme">Palette</label>
+            <select id="theme">
+              <option value="noir-crimson">Dark · Crimson rail</option>
+              <option value="noir-magma">Dark · Magma orange</option>
+              <option value="noir-rose">Dark · Rose neon</option>
+              <option value="noir-violet">Dark · Violet haze</option>
+              <option value="noir-electric">Dark · Electric cyan</option>
+              <option value="noir-jade">Dark · Jade circuit</option>
+              <option value="noir-gold">Dark · Gold forge</option>
+              <option value="noir-ice">Dark · Ice blue</option>
+              <option value="light-paper">Light · Paper red</option>
+              <option value="light-rose">Light · Rose blush</option>
+              <option value="light-indigo">Light · Indigo ink</option>
+              <option value="light-teal">Light · Teal mist</option>
+              <option value="light-slate">Light · Slate mono</option>
+              <option value="light-ember">Light · Ember sun</option>
+              <option value="light-orchid">Light · Orchid dream</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label>Accent override</label>
+            <div class="color-row">
+              <input type="color" id="accent" value="#ff003c" aria-label="Accent color override" />
+              <input type="text" id="accentHex" maxlength="7" placeholder="leave or clear to use look default" spellcheck="false" />
+            </div>
+            <p class="hint">Leave hex empty to use the look’s built-in accent. Set a hex to override for this URL only.</p>
+          </div>
+
+          <div class="field">
+            <label for="scale">Display scale</label>
+            <input type="range" id="scale" min="0.5" max="2" step="0.05" value="1" />
+            <div class="scale-readout">Size multiplier: <span id="scaleVal">1×</span></div>
+            <p class="hint">Scales the SVG width/height attributes (README images scale the same way).</p>
+          </div>
+
+          <button type="button" class="btn" id="btnOpen">Open image URL</button>
+        </div>
+
+        <div class="panel">
+          <h2>Preview</h2>
+          <div class="preview-box" id="preview">
+            <p class="preview-placeholder">Enter a GitHub username to preview.</p>
+          </div>
+
+          <h2 style="margin-top: 1.35rem">README — Markdown</h2>
+          <div class="code-block">
+            <textarea id="md" readonly rows="3"></textarea>
+            <button type="button" class="btn" id="btnCopyMd">Copy markdown</button>
+          </div>
+
+          <h2 style="margin-top: 1.35rem">README — HTML</h2>
+          <div class="code-block">
+            <textarea id="html" readonly rows="3"></textarea>
+            <button type="button" class="btn" id="btnCopyHtml">Copy HTML</button>
+          </div>
+
+          <h2 style="margin-top: 1.35rem">Image URL only</h2>
+          <div class="code-block">
+            <textarea id="urlRaw" readonly rows="2"></textarea>
+            <button type="button" class="btn" id="btnCopyUrl">Copy URL</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script src="/app.js"></script>
+  </body>
+</html>
